@@ -184,9 +184,197 @@ This is an H2
 
 链接文字都是用方括号来标记。可以加标签
 
+行内式：
+
 ```
 [百度](http://www.baidu.com "http://www.baidu.com")
 ```
 
+```
+[test](./source/test.txt)
+[git](./source/1.jpg)
+```
 
+参考式：
 
+```
+This is [an example] [id] reference-style link.
+[id]: http://example.com/  "Optional Title Here"
+[foo]: http://example.com/  (Optional Title Here)
+```
+
+网址可以用尖括号括起来，title属性可以放到下一行或缩进：
+
+```
+[id]: <http://example.com/>  "Optional Title Here"
+[id]: http://example.com/longish/path/to/resource/here
+    "Optional Title Here"
+```
+
+id不区分大小写
+
+隐式链接标记
+
+```
+[Baidu][]
+
+[Baidu]: www.baidu.com 百度
+```
+
+### 强调
+
+使用`*`和`_`进行包围表示强调，一个表示斜体，两个表示粗体。如果符号两边都有空白则会被当成普通符号。如果没有空白却想单纯表示符号，则加反斜线。
+
+### 代码
+
+一小段行内代码可以用反引号<code>`</code>
+
+    ``There is a literal backtick (`) here.``
+    `` ` ``
+
+### 图片
+
+类似链接来标记图片。有两种样式：行内式和参考式。
+
+行内式：
+
+```
+![Alt text](./source/1.jpg "git")
+```
+
+参考式：
+
+```
+![Alt text][id]
+[id]: url/to/image  "Optional title attribute"
+```
+
+无法指定宽高, 如果需要请使用普通的`<img>`标签。
+
+---
+
+## 其他
+
+### 自动链接
+
+```
+<http://www.baidu.com>
+```
+
+```
+<example@163.com>
+```
+
+### 反斜线
+
+支持以下字符转意：
+
+```
+\   反斜线
+`   反引号
+*   星号
+_   底线
+{}  花括号
+[]  方括号
+()  括弧
+#   井字号
++   加号
+-   减号
+.   英文句点
+!   惊叹号
+```
+
+---
+
+## 附注
+
+抄袭自：[Markdown语法](http://www.appinn.com/markdown/#link "http://www.appinn.com/markdown/#link")
+
+---
+
+# Github Flavored Markdown 的增强部分
+
+1.  单词中有下划线, GFM会忽略
+    
+    ```
+    test_test
+    ```
+
+2.  自动识别url地址
+
+    ```
+    http://www.baidu.com
+    ```
+
+3.  删除线
+    
+    ```
+    ~~abc~~
+    ```
+
+4.  标准使用缩进表示代码段, GFM可以使用三个`` ` ``. 还支持语言标识
+
+    ```javascript
+    function test() {
+        console.log("notice the blank line before this function?");
+    }
+    ```
+
+5.  Task列表
+    
+    基本列表:
+
+    ```
+    - [ ] Task1
+    - [x] Task2
+    ```
+
+    嵌套列表
+    
+    ```
+    - [ ] Task1
+        - [ ] Task1_1
+    ```
+
+6.  添加表情
+
+    ```
+    :blush:
+    :joy:
+    :grinning:
+    ```
+
+7.  支持表格
+
+    ```
+    | B1 | B2 |  
+    | ---- | ---- |
+    | q | p |
+    | w | x |
+    ```
+    
+    ```
+    | Name | Description  | 
+    | ------------- | ----------- |  
+    | Help  | ~~Display the~~ help window.|   
+    | Close | _Closes_ a window |
+    ```
+
+    支持格式位置
+
+    ```
+    | Left-aligned | Center-aligned | Right-aligned |
+    | :--- | :---:  |  ---: |
+    | git status   | git status | git status|
+    | git diff | git diff   | git diff  |
+    ```
+
+    支持图片
+
+## 附注
+
+抄袭自:
+*   [简书-GFM增强](http://www.jianshu.com/p/ae315ee086ae "http://www.jianshu.com/p/ae315ee086ae")
+
+参考:
+*   [Github-GFM](https://help.github.com/categories/writing-on-github/ "https://help.github.com/categories/writing-on-github/")
