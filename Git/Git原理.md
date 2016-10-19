@@ -117,10 +117,64 @@ $ git status # 状态
 $ git status -s # 状态简览
 ```
 
+关于简览: ??表示未暂存. A表示未跟踪新加入暂存区的文件. 左M表示进入暂存的数据与仓库数据不符, 右M表示工作区的数据与暂存区数据不符.
+
 暂存已修改的文件
 
 ```
 $ git add <file>
 ```
+
+忽略文件, 编辑文件`.gitignore`
+格式规范:
+
+-   所有空行和以`#`开头的行都会被忽略
+-   可以使用标准的glob模式匹配
+-   可以以(/)开头防止地柜
+-   可以以(/)结尾指定目录
+-   要忽略指定模式以外的文件, 可以加上(!)表示取反
+
+glob模式为简化的正则表达式. 星号匹配0+字符, [abc]匹配字符集, ?匹配一个任意字符, 两个星号匹配任意中间目录.
+
+可以去[gitignore](https://github.com/github/gitignore "https://github.com/github/gitignore")找现成的
+
+### 查看已暂存和未暂存的修改
+
+查看区别
+
+```
+$ git diff # 工作区与暂存区的区别
+$ git diff --staged # 暂存区与仓库的区别
+```
+
+提交更新
+
+```
+$ git commit -m "message" # 提交暂存区到仓库
+$ git commit -a -m "message" # 提交工作区到仓库
+```
+
+移除文件
+如果文件在暂存区中(一定修改过), 强制删除才行
+我们想删除仓库和暂存区中的文件, 但不想删除工作区的文件, 用参数--cached
+文件名可以使用glob匹配
+
+```
+$ git rm <file> # 工作区删除, 暂存区删除
+$ git rm -f <file> # 工作区删除, 暂存区删除, 强制
+$ git rm --cached <file> # 仓库删除, 暂存区删除
+```
+
+移动文件
+
+```
+$ git mv <fileA> <fileB> # 文件系统改名, 暂存区移除原文件, 添加新文件
+等同于
+$ mv <fileA> <fileB>
+$ git rm <fileA>
+$ git add <fileB>
+```
+
+### 查看提交历史
 
 
