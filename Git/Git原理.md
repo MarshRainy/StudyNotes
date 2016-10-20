@@ -2,6 +2,10 @@
 
 ---
 
+-   [前面的话](#前面的话)
+
+---
+
 ## 前面的话
 
 本文摘自git官方文档. 参考: [Git-Book](https://git-scm.com/book/zh/v2 "https://git-scm.com/book/zh/v2")
@@ -177,4 +181,153 @@ $ git add <fileB>
 
 ### 查看提交历史
 
+有很多参数. 不写
+
+```
+$ git log
+```
+
+### 撤销操作
+
+上一次提交少提交了部分东西
+
+```
+$ git commit -m 'initial commit'
+$ git add forgotten_file
+$ git commit --amend # 将暂存区合并到上一个提交
+```
+
+取消暂存(将暂存区某文件同步成为仓库文件)
+
+```
+$ git reset HEAD <file>
+```
+
+注: reset 的 --hard 参数可能修改工作目录
+
+撤销对文件的修改
+
+```
+$ git checkout -- <file>
+```
+
+是个比较危险的操作, 会丢失最近的修改, 这些修改没有提交到仓库.
+
+### 远程仓库的使用
+
+查看远程仓库
+
+```
+$ git remote # 显示远程仓库列表
+$ git remote -v # 显示此远程仓库对应的URL
+```
+
+添加远程仓库
+
+```
+$ git remote add <remote-name> <url>
+```
+
+拉取仓库中有, 但本地没有的信息
+
+```
+$ git fetch <remote-name> # 远程仓库->本地仓库, 不会进入工作区间
+```
+
+如果使用的是clone命令, remote-name为origin. 所以可以执行`get fetch origin`来抓取克隆后的所有数据. 不会进入工作区间, 需要手动合并工作.
+
+`git pull`会自动合并分支.
+
+`git clone`会自动设置本地仓库master跟踪远程仓库master
+
+推送到远程仓库
+
+```
+$ git push [remote-name] [branch-name]
+```
+
+只有你对remote-name有写入权限并且之前没人推送过, 才可以执行. 
+
+查看远程仓库
+
+```
+$ git remote show [remote-name]
+```
+
+远程仓库的移除与重命名
+
+```
+$ git remote rename [RN-1] [RN-2] # 修改remote-name
+$ git remote rm [RN] # 移除一个远程仓库
+```
+
+### 打标签
+
+列出标签
+
+```
+$ git tag
+$ git tag -l 'v1.8.5*'
+```
+
+创建标签
+
+附注标签
+
+```
+$ git tag -a v1.4 -m 'my version 1.4'
+```
+
+查看标签
+
+```
+$ git show v1.4
+```
+
+轻量标签
+
+```
+$ git tag v1.4-lw
+```
+
+后期打标签
+先找出要打版本的hash号
+
+```
+$ git log --pretty=oneline
+$ git tag -a v1.2 9fceb02
+```
+
+共享标签
+一般情况下, 不会把标签推动到远程仓库.
+
+```
+$ git push origin [tagname] # 推送一个标签
+$ git push origin --tags # 推送多个标签
+```
+
+检出标签
+并不能检出标签, 因为标签不能像分支一样移动, 但是可以让工作目录中的代码与某个标签一样:
+
+```
+$ git checkout -b [branchname] [tagname]
+```
+
+### git别名
+
+```
+$ git config --global alias.co checkout
+$ git config --global alias.br branch
+$ git config --global alias.ci commit
+$ git config --global alias.st status
+$ git config --global alias.unstage 'reset HEAD --'
+```
+
+如果是外部命令
+
+```
+$ git config --global alias.visual '!gitk'
+```
+
+## git分支
 
