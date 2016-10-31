@@ -343,3 +343,193 @@ $ git config --global alias.visual '!gitk'
 git的分支本质是指向提交对象的指针. 
 
 默认分支为master, 并无特殊含义, 只是因为初始化时默认创建了它, 又没人改.
+
+### 分支创建
+
+```
+$ git branch <branch-name> # 在当前分支上创建, 不会移动到分支上.
+$ git checkout <branch-name> # 切换分支. HEAD指向这个分支. 并且将工作区替换成分支
+两个操作等同于:
+$ git checkout -b <branch-name>
+```
+
+git有一个HEAD指针, 可以认为是分支的别名. 指向所在的本地分支. 
+
+分支切换会改变工作目录. 如果不能干净的切换分支(工作区有未提交的内容), 将不会切换分支
+
+创建分支只是在本分支上新建指针. 所以很快.
+
+### 分支的新建与合并
+
+```
+已经有一个master分支
+$ git checkout -b iss53
+修改iss53数据, 并提交
+
+准备修改紧急bug
+$ git checkout master # 工作目录回到master的状态
+$ git checkout -b hotfix
+修改bug提交
+
+bug改完要合并到master中
+$ git checkout master # 切换到master
+$ git merge hotfix # 将hotfix中数据合并到master
+因为master是hotfix的直接上游节点, 所以可以直接快进
+
+因为bug修改完了, 可以删除hotfix标签了
+$ git branch -d hotfix
+
+继续分支iss53
+$ git checkout iss53
+修改并提交
+
+在分支上将主干(master分支)的修改合并进来
+$ git checkout master
+$ git merge iss53
+由于是非直接上游, 所以合并可能失败
+会基于共同祖先做三方合并.
+
+iss53可以删除了
+$ git branch -d iss53
+```
+
+### 关于三方合并, 出现冲突
+
+```
+$ git status # 会显示未合并状态的文件
+```
+
+文件中, 会显示冲突的地方, 上面是HEAD(master)文件, 下面是合并进来的文件(iss53). 修改后, 只要暂存了冲突的文件, 就会标记为冲突已解决.
+
+可以使用图形化工具解决冲突
+
+```
+$ git mergetool
+```
+
+暂存后, 冲突状态的文件会被标记为冲突已解决, 之后需要提交才能完成整个合并.
+
+### 分支管理
+
+```
+$ git branch # 分支列表, 显示当前分支
+$ git branch -v # 分支列表, 会表明各分支指向的快照hash号
+$ git branch --merged/--no-merged # 查看哪些分支合并到了当前分支
+删除未合并的分支会报错, 因为相当于删除了就找不见了.
+```
+
+### 分支开发工作流
+
+可以建立多个分支用于开发. 可分为主分支和特征分支.
+
+### 远程分支
+
+远程跟踪分支是对远程分支状态的引用, 你不能私自移动此引用, 只能与远程通信时改变, 通常命名为[remote]/[branch]. 
+
+`fetch`命令就是将远程库的代码同步到本地, 不会改变当前分支的任何东西
+
+`pull`命令是`fetch`命令和`merge`命令的合体操作.
+
+```
+$ git remote show [remote-name] # 联网查看远程的分支信息
+```
+
+```
+$ git push [remote] [branch] # 将本地的branch分支推送到remote远程的branch上.
+$ git push [remote] [local-branch]:[remote-branch] # 本地的分支名可以和远程分支名不一样.
+```
+
+```
+第一次从远程下载代码
+$ git remote add <remote-name> <url>
+$ git fetch origin # 只下载代码, 和生成远程分支引用, 但是不修改工作区间
+$ git checkout -b [local-branch] [remote]/[remote-branch]
+```
+
+从远程分支检出一个本地分支会自动创建一个"跟踪分支"/"上游分支". 跟踪分支是:与远程分支有直接关系的本地分支. 如果在跟踪分支上输入`git pull`, git能知道从哪个服务器的哪个分支上合并到当前分支.
+
+```
+$ git checkout -b [b1] [r1]/[b1]
+===
+$ git checkout --track [r1]/[b1]
+```
+
+可以在任意时间设置或修改跟踪分支, 
+```
+$ git branck -u/--set-upstream-to [r1]/[b1]
+```
+
+当处于跟踪分支中时, 可以用`@{u}`或`@{upstream}`来代表跟踪分支:
+```
+$ git merge [r1]/[b1]
+===
+$ git merge @{u}
+```
+
+可以看各个本地分支都跟踪了哪个远程分支`git branch -vv`
+
+服务器上删除远程分支
+```
+$ git push origin --delete serverfix
+```
+
+### 变基
+
+```
+1. 基本操作
+$ git checkout experiment 
+$ git rebase master # 以master为基修改experiment的数据, 属于另一种合并方式
+2. 特殊
+$ git rebase --onto master server client # 将server和client的共同祖先到client的修改合并到master上.
+之后的合并就可以走快速合并了
+```
+
+变基的风险: 不要对在你仓库外有副本的分支执行变基. 否则人民会唾弃你的.
+具体讲, 公共库的变基, 会希望丢弃一下东西, 但是别人还有这些数据, 依旧会提交到仓库, 从而导致仓库变得很乱.
+
+如果公共库变基了, 可以在合并时也使用变基
+```
+$ git pull --rebase
+===
+$ git fetch
+$ git rebase teamone/master
+```
+
+自行选择合并或变基
+
+## 服务器上的git
+
+一般建裸仓库, 没有工作目录的..
+
+### 协议
+
+使用的协议: 本地协议, HTTP协议, SSH协议, Git协议. 
+
+文件协议: 数据传输方便, 但安全性等不保障
+
+智能HTTP协议: 当前在用. 可用用户名密码授权. 使用方便, 但管理和部署比较麻烦
+
+哑HTTP协议: 好设置, 但当成文件服务系统用.
+
+SSH协议: 架设容易, 安全高效, 但不可匿名, 比较私有.
+
+Git协议: 无授权, 速度快, 难架设, 非标准端口, 一般用作只读.
+
+### 其他
+
+部署啥的, 到时候再说.
+
+## 分布式Git
+
+### 工作模式
+
+集中式管理: 一个公共仓库, 其他人都可以读, 并且有写的权限. 共同维护一个公共库
+
+集成管理者工作流: 每人都有一个公共库, 一个私有库, 有对任何公共库的读权限, 只有对自己公共库的写权限, 其中一个人是管理者. 其他人读管理者的公共库, 开发, 提交到自己的公共库, 请求管理者拉取自己公共库的代码合并. 
+
+司令官副司令官工作流: 副官用于合并一部分代码, 汇总后交由司令汇总. 非常大的项目才会用到.
+
+### 贡献代码
+
+避免空白不同
+关于提交信息, 最好是一行为主描述, 之后空白一行, 之后写详细描述
