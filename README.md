@@ -3,8 +3,10 @@
 ## 综述:
 
 -   Markdown语法
+-   Git
 -   算法与数据结构
--   Java
+-   Java基础
+-   Java框架
 -   JS 
 
 ## 附注:
